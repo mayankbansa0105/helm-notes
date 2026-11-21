@@ -1,0 +1,42 @@
+# Helm — Daily Revision Notes
+
+A set of short notes for revising Helm every day. Read one file a day and try the commands
+in a scratch terminal as you go.
+
+> Helm version used here: **v4** (examples were run with v4.3.2). Everything in these notes
+> also works the same way in Helm v3 unless a note says otherwise.
+
+---
+
+## Files
+
+| # | File | Topic |
+|---|------|-------|
+| 01 | [01-repo-search-show.md](01-repo-search-show.md) | Finding charts: `helm repo`, `helm search`, `helm show` |
+
+More chapters will be added here as they are written.
+
+---
+
+## One-page cheat sheet
+
+```
+  where charts live                     find a chart                       look inside before installing
+┌──────────────────────┐          ┌───────────────────────┐          ┌──────────────────────────────┐
+│ HTTP chart repo      │ repo add │ helm search repo <kw> │          │ helm show chart  <chart>     │
+│  (index.yaml)        │─────────►│  (your added repos)   │─────────►│ helm show values <chart>     │
+│                      │ repo     │                       │  pick    │ helm show readme <chart>     │
+│                      │ update   │ helm search hub <kw>  │  one     │ helm show crds   <chart>     │
+│ OCI registry         │          │  (Artifact Hub)       │          │ helm show all    <chart>     │
+│  oci://...           │──────────┼───── no search ───────┼─────────►│ (works with oci:// directly) │
+└──────────────────────┘          └───────────────────────┘          └──────────────────────────────┘
+```
+
+**Rules of thumb**
+
+1. `helm repo add` only saves a name → URL pair. Run `helm repo update` to refresh the local copy of each repo's index.
+2. `helm search repo` searches your **local cached indexes**, so stale cache = stale results. `helm search hub` searches Artifact Hub online.
+3. Charts are referred to as `<repo-name>/<chart-name>`, e.g. `ingress-nginx/ingress-nginx`.
+4. OCI registries are **not** added with `helm repo add` and can't be searched. Use the full `oci://` reference.
+5. Always `helm show values` before installing. It's the list of everything you're allowed to configure.
+6. **Chart version** (`version`) is the package version. **App version** (`appVersion`) is the software inside it. `--version` flags mean the chart version.

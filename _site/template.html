@@ -1,0 +1,200 @@
+<title>Helm Revision Notes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,600;0,800;1,400&family=Spline+Sans+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: fixed-width lesson index on the left, one reading column on the right; index collapses to a menu on phones. */
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --fg: #1b2230;
+  --muted: #5b6577;
+  --line: #dde1e8;
+  --accent: #2456c9;
+  --accent-soft: #e6edfb;
+  --code-bg: #eef1f5;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Spline Sans Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161d; --surface: #181d26; --fg: #e3e7ee; --muted: #949db0; --line: #2a313d;
+    --accent: #7ea4ff; --accent-soft: #1e2a44; --code-bg: #1d232e; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161d; --surface: #181d26; --fg: #e3e7ee; --muted: #949db0; --line: #2a313d;
+  --accent: #7ea4ff; --accent-soft: #1e2a44; --code-bg: #1d232e; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.65 var(--font-body);
+}
+.shell {
+  display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 48px;
+  max-width: 1180px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 64px;
+}
+nav.index {
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start;
+  max-height: calc(100vh - 48px); overflow-y: auto;
+}
+.brand { font-weight: 800; font-size: 15px; letter-spacing: -0.01em; margin: 0 0 4px; }
+.brand-sub { font-size: 13px; color: var(--muted); margin: 0 0 20px; }
+.toc { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.toc a {
+  display: grid; grid-template-columns: 28px 1fr; gap: 6px; align-items: baseline;
+  padding: 7px 10px; border-radius: 6px; color: var(--fg); text-decoration: none; font-size: 14px; line-height: 1.35;
+}
+.toc a:hover { background: var(--accent-soft); }
+.toc a[aria-current="page"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.toc .num { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.toc a[aria-current="page"] .num { color: var(--accent); }
+.menu-btn { display: none; }
+
+main { min-width: 0; }
+.doc { max-width: 76ch; }
+.doc h1 { font-size: 2rem; line-height: 1.2; letter-spacing: -0.02em; font-weight: 800; margin: 0 0 1.2rem; text-wrap: balance; }
+.doc h2 { font-size: 1.35rem; line-height: 1.3; font-weight: 800; margin: 2.4rem 0 0.8rem; text-wrap: balance; }
+.doc h3 { font-size: 1.08rem; font-weight: 600; margin: 1.8rem 0 0.6rem; }
+.doc p, .doc ul, .doc ol { margin: 0 0 1rem; }
+.doc li { margin: 0.25rem 0; }
+.doc a { color: var(--accent); text-underline-offset: 2px; }
+.doc hr { border: 0; border-top: 1px solid var(--line); margin: 2.2rem 0; }
+.doc blockquote { margin: 0 0 1rem; padding: 0.6rem 1rem; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 6px 6px 0; }
+.doc blockquote p:last-child { margin-bottom: 0; }
+.doc code { font-family: var(--font-mono); font-size: 0.86em; background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; }
+.doc pre {
+  background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px;
+  padding: 14px 16px; overflow-x: auto; font-size: 13.5px; line-height: 1.5; margin: 0 0 1.2rem;
+}
+.doc pre code { background: none; padding: 0; font-size: inherit; }
+.table-wrap { overflow-x: auto; margin: 0 0 1.2rem; }
+.doc table { border-collapse: collapse; font-size: 14.5px; min-width: 100%; }
+.doc th, .doc td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.doc th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+.doc details {
+  margin: 0.3rem 0 1.1rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface);
+}
+.doc summary { cursor: pointer; padding: 6px 12px; font-size: 14px; color: var(--accent); font-weight: 600; }
+.doc details[open] { padding-bottom: 8px; }
+.doc details > :not(summary) { padding: 0 12px; }
+.doc details { padding-inline: 0; }
+.doc details[open] summary { margin-bottom: 4px; }
+
+.tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 1.4rem; }
+.btn {
+  font: 600 13px var(--font-body); color: var(--fg); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 6px; padding: 7px 12px; cursor: pointer;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 3rem; max-width: 76ch; }
+.pager a {
+  display: block; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
+  text-decoration: none; color: var(--fg); min-width: 0;
+}
+.pager a:hover { border-color: var(--accent); }
+.pager .dir { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.pager .t { display: block; font-weight: 600; font-size: 14px; }
+.pager .next { text-align: right; grid-column: 2; }
+
+@media (max-width: 860px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 20px; padding-block: 16px 48px; }
+  nav.index { position: static; max-height: none; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+  .brand-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .brand-sub { margin-bottom: 0; }
+  .menu-btn { display: inline-block; }
+  .toc { margin-top: 12px; }
+  .doc h1 { font-size: 1.6rem; }
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="shell">
+  <nav class="index" aria-label="Notes">
+    <div class="brand-row">
+      <div>
+        <p class="brand">Helm</p>
+        <p class="brand-sub">Daily revision notes</p>
+      </div>
+      <button class="btn menu-btn" id="menuBtn" aria-expanded="false" aria-controls="toc">Contents</button>
+    </div>
+    <ol class="toc" id="toc"></ol>
+  </nav>
+  <main>
+    <div class="tools" id="tools" hidden>
+      <button class="btn" id="revealAll">Show all answers</button>
+      <button class="btn" id="hideAll">Hide all answers</button>
+    </div>
+    <article class="doc" id="doc"></article>
+    <div class="pager" id="pager"></div>
+  </main>
+</div>
+
+<script id="docs" type="application/json">__DOCS__</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script>
+const docs = JSON.parse(document.getElementById("docs").textContent);
+const byFile = Object.fromEntries(docs.map(d => [d.file.toLowerCase(), d.key]));
+const toc = document.getElementById("toc"), docEl = document.getElementById("doc");
+const pager = document.getElementById("pager"), tools = document.getElementById("tools");
+const menuBtn = document.getElementById("menuBtn");
+const narrow = matchMedia("(max-width: 860px)");
+
+toc.innerHTML = docs.map(d =>
+  `<li><a href="#${d.key}" data-key="${d.key}"><span class="num">${d.num || "··"}</span><span>${d.key === "home" ? "Overview & cheat sheet" : d.title}</span></a></li>`
+).join("");
+
+function setMenu(open) {
+  toc.hidden = narrow.matches && !open;
+  menuBtn.setAttribute("aria-expanded", String(open));
+}
+menuBtn.addEventListener("click", () => setMenu(toc.hidden));
+narrow.addEventListener("change", () => setMenu(false));
+
+function render() {
+  let key = location.hash.slice(1);
+  if (!docs.some(d => d.key === key)) {
+    try { key = localStorage.getItem("helm:lastNote") || "home"; } catch { key = "home"; }
+    if (!docs.some(d => d.key === key)) key = "home";
+  }
+  try { localStorage.setItem("helm:lastNote", key); } catch {}
+  const i = docs.findIndex(d => d.key === key), d = docs[i];
+  docEl.innerHTML = marked.parse(d.md, { gfm: true });
+
+  docEl.querySelectorAll("a[href]").forEach(a => {
+    const href = a.getAttribute("href");
+    const target = byFile[href.split("#")[0].toLowerCase()];
+    if (target) a.setAttribute("href", "#" + target);
+    else if (/^https?:/.test(href)) { a.target = "_blank"; a.rel = "noopener"; }
+  });
+  docEl.querySelectorAll("table").forEach(t => {
+    const w = document.createElement("div"); w.className = "table-wrap";
+    t.replaceWith(w); w.appendChild(t);
+  });
+  tools.hidden = !docEl.querySelector("details");
+
+  toc.querySelectorAll("a").forEach(a =>
+    a.dataset.key === key ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
+  document.title = (d.key === "home" ? "" : d.num + " " + d.title + " · ") + "Helm Revision Notes";
+
+  const prev = docs[i - 1], next = docs[i + 1];
+  const label = x => x.key === "home" ? "Overview" : `${x.num} · ${x.title}`;
+  pager.innerHTML =
+    (prev ? `<a href="#${prev.key}"><span class="dir">Previous</span><span class="t">${label(prev)}</span></a>` : "") +
+    (next ? `<a class="next" href="#${next.key}"><span class="dir">Next</span><span class="t">${label(next)}</span></a>` : "");
+
+  setMenu(false);
+  window.scrollTo(0, 0);
+}
+document.getElementById("revealAll").onclick = () => docEl.querySelectorAll("details").forEach(x => x.open = true);
+document.getElementById("hideAll").onclick = () => docEl.querySelectorAll("details").forEach(x => x.open = false);
+addEventListener("hashchange", render);
+render();
+</script>
