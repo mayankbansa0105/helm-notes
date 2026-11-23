@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-settings
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  annotations:
+    helm.sh/resource-policy: keep
+data:
+  mode: important

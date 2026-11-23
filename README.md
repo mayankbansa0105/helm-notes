@@ -13,6 +13,7 @@ in a scratch terminal as you go.
 | # | File | Topic |
 |---|------|-------|
 | 01 | [01-repo-search-show.md](01-repo-search-show.md) | Finding charts: `helm repo`, `helm search`, `helm show` |
+| 02 | [02-install-inspect-uninstall.md](02-install-inspect-uninstall.md) | Releases: `helm install`, `list`, `status`, `history`, `get`, `uninstall`, and cleaning up orphaned resources |
 
 More chapters will be added here as they are written.
 
@@ -40,3 +41,6 @@ More chapters will be added here as they are written.
 4. OCI registries are **not** added with `helm repo add` and can't be searched. Use the full `oci://` reference.
 5. Always `helm show values` before installing. It's the list of everything you're allowed to configure.
 6. **Chart version** (`version`) is the package version. **App version** (`appVersion`) is the software inside it. `--version` flags mean the chart version.
+7. `helm show ...` reads a **chart**. `helm get ...` reads an installed **release**. `get values` = your overrides; add `--all` for the merged result.
+8. Releases are **namespaced** and stored as Secrets (`sh.helm.release.v1.<name>.v<rev>`) in that namespace. Always pass `-n`.
+9. `helm uninstall` removes only what's in the release manifest. **PVCs from StatefulSets, `resource-policy: keep` objects, hooks and CRDs stay behind.**
