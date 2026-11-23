@@ -1,0 +1,8 @@
+# Prints the final merged values, so you can see which source won.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-values
+data:
+  values.yaml: |
+{{ toYaml .Values | indent 4 }}

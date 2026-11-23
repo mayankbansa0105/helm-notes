@@ -1,0 +1,4 @@
+replicaCount: 5
+env: prod
+image:
+  tag: "1.28"
