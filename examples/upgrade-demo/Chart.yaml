@@ -1,0 +1,5 @@
+apiVersion: v2
+name: upgrade-demo
+description: Small chart for practising helm upgrade / rollback, good and bad
+version: 1.0.0
+appVersion: "6.16.0"

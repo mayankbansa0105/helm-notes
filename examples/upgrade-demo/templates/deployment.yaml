@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      track: {{ .Values.selectorTrack }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        track: {{ .Values.selectorTrack }}
+    spec:
+      containers:
+      - name: app
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        env:
+        - name: PODINFO_UI_MESSAGE
+          value: {{ .Values.message | quote }}
+        ports:
+        - containerPort: 9898
+        readinessProbe:
+          httpGet: { path: /readyz, port: 9898 }
+          periodSeconds: 3
+        resources:
+          requests: { cpu: 10m, memory: 32Mi }

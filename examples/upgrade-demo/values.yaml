@@ -1,0 +1,13 @@
+replicaCount: 2
+image:
+  repository: ghcr.io/stefanprodan/podinfo
+  tag: "6.16.0"          # set to a tag that doesn't exist to break the rollout
+message: "hello v1"
+# Change this to break the Deployment's immutable selector
+selectorTrack: stable
+# Adds an extra ConfigMap (a NEW resource in the upgrade, for --cleanup-on-fail)
+extraConfig: false
+# Makes the pre-upgrade hook Job exit 1
+hookFail: false
+# Makes the migration Job fail (a normal, non-hook Job; needs --wait-for-jobs to be noticed)
+migrationFail: false

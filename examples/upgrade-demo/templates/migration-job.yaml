@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # name includes the revision so each upgrade runs a fresh Job (Job specs are immutable)
+  name: {{ .Release.Name }}-migrate-r{{ .Release.Revision }}
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: migrate
+        image: busybox:1.37
+        command: ["sh", "-c", "echo migrating; sleep 5; exit {{ if .Values.migrationFail }}1{{ else }}0{{ end }}"]

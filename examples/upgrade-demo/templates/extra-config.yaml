@@ -1,0 +1,10 @@
+{{- if .Values.extraConfig }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-extra
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  feature: "on"
+{{- end }}

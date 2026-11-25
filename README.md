@@ -15,6 +15,7 @@ in a scratch terminal as you go.
 | 01 | [01-repo-search-show.md](01-repo-search-show.md) | Finding charts: `helm repo`, `helm search`, `helm show` |
 | 02 | [02-install-inspect-uninstall.md](02-install-inspect-uninstall.md) | Releases: `helm install`, `list`, `status`, `history`, `get`, `uninstall`, and cleaning up orphaned resources |
 | 03 | [03-custom-values.md](03-custom-values.md) | Custom values: `-f` files, the `--set` family, precedence, types, and values on upgrade |
+| 04 | [04-upgrade-rollback.md](04-upgrade-rollback.md) | `helm upgrade` and `helm rollback`: happy and failing releases, auto rollback, and production-safe flags |
 
 More chapters will be added here as they are written.
 
@@ -48,3 +49,6 @@ More chapters will be added here as they are written.
 10. Values precedence: chart defaults < `-f` files (last wins) < `--set` (last wins). **Same key in `-f` and `--set` is not an error: `--set` wins.**
 11. Maps merge, lists are replaced, `null` deletes a key. Quote `--set` args in zsh and version-like values in YAML.
 12. `helm upgrade` with any `--set`/`-f` **drops earlier overrides**. Pass all values every time, or use `--reset-then-reuse-values`.
+13. Without `--wait`, `deployed` only means "applied". Add `--wait --wait-for-jobs`, or `--rollback-on-failure`, to get a real check.
+14. `--rollback-on-failure` restores the last good revision. `helm rollback` with no revision goes to the **previous** one, so name the good revision.
+15. `--dry-run` doesn't catch immutable-field errors (e.g. a Deployment selector change). Only the real apply does.
